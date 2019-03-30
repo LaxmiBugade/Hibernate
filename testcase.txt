@@ -1,0 +1,60 @@
+package com.cg.jpastart.test;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.cg.jpastart.entities.Department;
+import com.cg.jpastart.entities.Employee;
+
+public class TestEmpDept {
+
+	private static EntityManager mgr;
+	
+	@BeforeClass
+	public static void init(){
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("JPA-PU");
+		mgr = factory.createEntityManager();
+	}
+	
+	@Before
+	public void start(){
+		mgr.getTransaction().begin();
+	}
+	
+	@After
+	public void stop(){
+		mgr.getTransaction().commit();
+	}
+	
+	@Test
+	public void testFetch(){
+		Department dept = (Department)mgr.find(Department.class, 10);
+		System.out.println("Department:"+dept.getName());
+		System.out.println(dept.getEmployees());
+	}
+	
+	@Test
+	public void addEmployee(){
+		Department dept = (Department)mgr.find(Department.class, 10);
+		
+		Employee e1 = new Employee();
+		e1.setId(1003);
+		e1.setName("Polo");
+		e1.setSalary(5000);
+		
+		e1.setDepartment(dept);
+		mgr.close();
+	}
+	
+	@AfterClass
+	public static void flush(){
+		mgr.close();
+	}
+}
